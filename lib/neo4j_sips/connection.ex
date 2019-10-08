@@ -43,7 +43,7 @@ defmodule Neo4j.Sips.Connection do
       {:get, url, _} ->
         log(@get <> "#{url}")
         case HTTP.get(url) do
-          {:ok, %HTTPoison.Response{body: body, headers: _headers, status_code: 200}} -> Poison.decode!(body)
+          {:ok, %HTTPoison.Response{body: body, headers: _headers, status_code: 200}} -> Jason.decode!(body)
           {:error, %HTTPoison.Error{id: _id, reason: reason}} -> {:error, reason}
           {:ok, _} -> []
         end
@@ -111,7 +111,7 @@ defmodule Neo4j.Sips.Connection do
   end
 
   defp decode_as_response(resp) do
-    case Poison.decode(resp, as: Neo4j.Sips.Response) do
+    case Jason.decode(resp) do
       {:ok, sip} -> {:ok, sip}
       error      -> {:error, error}
     end
