@@ -46,6 +46,7 @@ defmodule Neo4j.Sips.Server do
       :transaction,
       :relationship
     ]
+    use ExConstructor
   end
 
   @headers [
@@ -94,12 +95,11 @@ defmodule Neo4j.Sips.Server do
 
           {:ok, response_db_data} ->
             response_db_root = HTTP.get!("#{url}")
-
             if response_db_root.status_code == 200 do
-              %{data: data, management: management} = Poison.Parser.parse!(response_db_root.body, keys: :atoms!)
-              server_data = Poison.decode!(response_db_data.body, as: ServerData, keys: :atoms) # returned by: /db/data/
+              %{data: data, management: management} = Jason.decode!(response_db_root.body, keys: :atoms!)
+              server_data = response_db_data.body |> Jason.decode!() |> ServerData.new() # returned by: /db/data/
               %{node_labels: _node_labels, transaction: _transaction, neo4j_version: _neo4j_version}
-                 = Poison.Parser.parse!(response_db_data.body, keys: :atoms!)
+                = Jason.decode!(response_db_data.body, keys: :atoms!)
               {:ok, %Neo4j.Sips.Server{
                   server_url: url, management_url: management, data_url: data,
                   data: server_data, timeout: timeout}}
