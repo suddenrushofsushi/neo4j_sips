@@ -24,7 +24,7 @@ defmodule Neo4j.Sips.Query.Test do
     """
 
     assert {:ok, _rows} = Neo4j.query(Neo4j.conn, String.split(batch_cypher, ";") # different command behavior in the same lot/batch
-                          |> Enum.map(&(String.strip(&1)))
+                          |> Enum.map(&(String.trim(&1)))
                           |> Enum.filter(&(String.length(&1) > 0)))
 
     :ok
