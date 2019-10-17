@@ -84,11 +84,11 @@ defmodule Neo4j.Sips.Utils do
   defp merge_options(statement, opts) when is_nil(opts), do: statement
   defp merge_options(statement, opts), do: Map.merge(statement, opts)
 
-  defp to_json(value) when is_map(value) do
-    value |> Map.delete(:__struct__) |> Jason.encode!() |> IO.iodata_to_binary()
+  defp to_json(%{__struct__: _} = value) do
+    value |> Map.from_struct() |> Poison.encode!() |> IO.iodata_to_binary()
   end
   defp to_json(value) do
-    value |> Jason.encode!() |> IO.iodata_to_binary()
+    value |> Poison.encode!() |> IO.iodata_to_binary()
   end
 
 end
